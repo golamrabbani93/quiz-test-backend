@@ -19,7 +19,7 @@ const registerUserIntoDB = async (payload: TUser) => {
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed To create User')
     }
-
+    //  create student if user is student other than supervisor
     if (newUser[0].role === USER_ROLE.student) {
       const newStudent = await Student.create(
         [
@@ -36,9 +36,7 @@ const registerUserIntoDB = async (payload: TUser) => {
         throw new AppError(httpStatus.BAD_REQUEST, 'Failed To create Student')
       }
     }
-    if (newUser[0].role === USER_ROLE.supervisor) {
-      console.log('supervisor')
-    }
+
     await session.commitTransaction()
     await session.endSession()
     return newUser[0]

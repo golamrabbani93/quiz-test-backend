@@ -11,7 +11,7 @@ const router = express.Router()
 
 router.get(
   '/me',
-  auth(USER_ROLE.user, USER_ROLE.admin),
+  auth(USER_ROLE.student, USER_ROLE.supervisor, USER_ROLE.admin),
   userControllers.getSingleUser,
 )
 //* Get ALl user Route
@@ -20,7 +20,7 @@ router.get('/', auth(USER_ROLE.admin), userControllers.getAllUser)
 //* Update A single user Route
 router.put(
   '/me',
-  auth(USER_ROLE.user, USER_ROLE.admin),
+  auth(USER_ROLE.student, USER_ROLE.supervisor, USER_ROLE.admin),
   validateRequest(userValidation.UserUpdateValidatioonSchema),
   userControllers.updateSingleUser,
 )
