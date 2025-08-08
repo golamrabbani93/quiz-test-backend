@@ -38,6 +38,12 @@ const createQuestionValidation = z.object({
         invalid_type_error: 'Correct option index must be a number',
       })
       .min(0),
+    time: z
+      .number({
+        required_error: 'Time is required',
+        invalid_type_error: 'Time must be a number',
+      })
+      .optional(),
   }),
 })
 

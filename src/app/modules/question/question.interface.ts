@@ -4,6 +4,7 @@ export interface IQuestion {
   questionText: string
   options: string[]
   correctOptionIndex: number
+  time: number
   createdAt: Date
   updatedAt: Date
 }

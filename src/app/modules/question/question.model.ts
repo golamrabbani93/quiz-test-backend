@@ -8,6 +8,7 @@ export const questionSchema = new Schema<IQuestion>(
     questionText: { type: String, required: true },
     options: { type: [String], required: true },
     correctOptionIndex: { type: Number, required: true },
+    time: { type: Number, default: 60 }, // Assuming time is in seconds
   },
   { timestamps: true },
 )
