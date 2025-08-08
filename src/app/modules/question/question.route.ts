@@ -13,5 +13,26 @@ router.post(
   validateRequest(questionValidation.create),
   questionController.createQuestion,
 )
+router.get(
+  '/',
+  auth(USER_ROLE.student, USER_ROLE.supervisor, USER_ROLE.admin),
+  questionController.getAllQuestions,
+)
+router.get(
+  '/:id',
+  auth(USER_ROLE.supervisor, USER_ROLE.admin),
+  questionController.getQuestionById,
+)
+router.put(
+  '/:id',
+  auth(USER_ROLE.supervisor, USER_ROLE.admin),
+  validateRequest(questionValidation.update),
+  questionController.updateQuestionById,
+)
+router.delete(
+  '/:id',
+  auth(USER_ROLE.supervisor, USER_ROLE.admin),
+  questionController.deleteQuestionById,
+)
 
 export const questionRoutes = router
