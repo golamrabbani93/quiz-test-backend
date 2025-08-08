@@ -5,46 +5,22 @@ import { User } from '../User/user.model'
 import { TLoginUser } from './auth.interface'
 import jwt from 'jsonwebtoken'
 import config from '../../config'
-import mongoose from 'mongoose'
-import { Student } from '../student/student.model'
 import { USER_ROLE } from '../User/user.constant'
 // *Register User Info In to Database
 const registerUserIntoDB = async (payload: TUser) => {
-  const session = await mongoose.startSession()
-  try {
-    session.startTransaction()
-    //! create a user
-    const newUser = await User.create([payload], { session })
-
-    if (!newUser.length) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed To create User')
-    }
-    //  create student if user is student other than supervisor
-    if (newUser[0].role === USER_ROLE.student) {
-      const newStudent = await Student.create(
-        [
-          {
-            user: newUser[0].id,
-            name: newUser[0].name,
-            email: newUser[0].email,
-          },
-        ],
-        { session },
-      )
-
-      if (!newStudent.length) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'Failed To create Student')
-      }
-    }
-
-    await session.commitTransaction()
-    await session.endSession()
-    return newUser[0]
-  } catch (error: any) {
-    await session.abortTransaction()
-    await session.endSession()
-    throw new Error(error)
+  //check role
+  if (
+    payload.role !== USER_ROLE.student &&
+    payload.role !== USER_ROLE.supervisor
+  ) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'You are not allowed to register this user',
+    )
   }
+  //! create a user
+  const newUser = await User.create(payload)
+  return newUser
 }
 
 // *Login User
