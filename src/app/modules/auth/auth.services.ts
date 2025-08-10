@@ -3,9 +3,10 @@ import AppError from '../../errors/AppError'
 import { TUser } from '../User/user.interface'
 import { User } from '../User/user.model'
 import { TLoginUser } from './auth.interface'
-import jwt from 'jsonwebtoken'
+
 import config from '../../config'
 import { USER_ROLE } from '../User/user.constant'
+import { createToken, verifyToken } from './auth.utils'
 // *Register User Info In to Database
 const registerUserIntoDB = async (payload: TUser) => {
   //check role
@@ -43,28 +44,58 @@ const loginUser = async (payload: TLoginUser) => {
   //* Create JWT token and sent to the  client
 
   const jwtPayload = {
-    userId: existsUser._id,
-    userEmail: existsUser.email,
-    role: existsUser.role,
+    userId: existsUser?._id,
+    userEmail: existsUser?.email,
+    role: existsUser?.role,
   }
-  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
-    expiresIn: '1d',
-  })
-  // add refresh token
-  const refreshToken = jwt.sign(
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_secret_expires_in as string,
+  )
+
+  //refresh token
+  const refreshToken = createToken(
     jwtPayload,
     config.jwt_refresh_secret as string,
-    {
-      expiresIn: '30d',
-    },
+    config.jwt_refresh_secret_expires_in as string,
   )
+
   return {
-    existsUser,
     accessToken,
     refreshToken,
+  }
+}
+
+const refreshToken = async (token: string) => {
+  // checking if the given token is valid
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string)
+
+  const { userEmail } = decoded
+
+  // checking if the user is exist
+  const user = await User.isUserExistsByEmail(userEmail)
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !')
+  }
+
+  const jwtPayload = {
+    userId: user._id,
+    userEmail: user.email,
+    role: user.role,
+  }
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_secret_expires_in as string,
+  )
+  return {
+    accessToken,
   }
 }
 export const authServices = {
   registerUserIntoDB,
   loginUser,
+  refreshToken,
 }

@@ -11,8 +11,10 @@
     "typescript-eslint": "^7.18.0"
   },
   "dependencies": {
+    "@types/cookie-parser": "^1.4.9",
     "@types/stripe": "^8.0.417",
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.1",
