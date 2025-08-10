@@ -30,7 +30,7 @@
     "stripe": "^16.8.0",
     "zod": "^3.23.8"
   },
-  "name": "Test-School",
+  "name": "test-school",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
