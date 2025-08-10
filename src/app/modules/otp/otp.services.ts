@@ -2,6 +2,7 @@ import httpStatus from 'http-status'
 import AppError from '../../errors/AppError'
 import { sendEmail } from '../../utils/sendEmail'
 import { Otp } from './otp.model'
+import { User } from '../User/user.model'
 
 const OTP_EXPIRATION_MINUTES = 5
 const RESEND_LIMIT = 3
@@ -51,6 +52,12 @@ const verifyOtp = async (email: string, otp: string) => {
     throw new AppError(httpStatus.UNAUTHORIZED, 'OTP expired')
 
   record.verified = true
+  //find user and update isUserExistsByEmail
+  const user = await User.findOne({ email })
+  if (user) {
+    user.isEmailVerified = true
+    await user.save()
+  }
   await record.save()
   return { message: 'OTP verified' }
 }
